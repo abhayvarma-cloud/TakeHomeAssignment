@@ -66,6 +66,10 @@ default to local values and can be overridden via environment variables (used by
 
 Actuator health and info endpoints are exposed at `/actuator/health` and `/actuator/info`.
 
+## DATA
+
+data.sql and schema.sql pre-loads 10000 records for testing and schema.sql create an item_seq table to keep track sequence and the number of records  in items table .
+
 ## API
 
 Base path: `/api/items`
@@ -76,8 +80,9 @@ Base path: `/api/items`
 | `GET` | `/api/items/{id}` | Get an item by id, `404` if missing |
 | `POST` | `/api/items` | Create an item, publishes a `CREATED` Kafka event |
 | `DELETE` | `/api/items/{id}` | Delete an item, `404` if missing, publishes a `DELETED` Kafka event |
-| `GET` | `/api/items?size=100&page=20` | List 100 items for page 20, items are deterministically loaded by changing the page no., if size changed it will shift page numbers | `GET` | `/api/items?size=100` | List 100 latest  items |
+| `GET` | `/api/items?size=100&page=20` | List 100 items for page 20, items are deterministically loaded by changing the page no., if size changed it will shift page numbers| `GET` | `/api/items?size=100` | List 100 latest items |
 
+ 
 Item events are published to the `item-events` Kafka topic and consumed by
 `ItemEventConsumer` (with retry via `@RetryableTopic`).
 
