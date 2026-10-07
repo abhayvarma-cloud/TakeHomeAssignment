@@ -1,5 +1,9 @@
 package com.example.demo.entity;
 
+import java.time.LocalDateTime;
+
+import org.springframework.data.annotation.CreatedDate;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -14,6 +18,14 @@ public class Item {
     private String name;
 
     private String description;
+    
+    @CreatedDate
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+    
+    
+    @Column(name = "seq", unique = true, updatable = false)
+    private Long seq; 
 
     public Item() {}
 
@@ -27,4 +39,9 @@ public class Item {
     public void setName(String name) { this.name = name; }
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+    public LocalDateTime getCreatedAt() { return createdAt ; }
+    public Long getSeq() { return seq; }
+    public void setSeq(Long seq) { this.seq= seq; }
+       
+    
 }

@@ -76,6 +76,9 @@ Base path: `/api/items`
 | `GET` | `/api/items/{id}` | Get an item by id, `404` if missing |
 | `POST` | `/api/items` | Create an item, publishes a `CREATED` Kafka event |
 | `DELETE` | `/api/items/{id}` | Delete an item, `404` if missing, publishes a `DELETED` Kafka event |
+| `GET` | `/api/items?size=100&page=20` | List 100 items for page 20, items are deterministically loaded by changing the page no., if size changed it will shift page numbers|
+
+| `GET` | `/api/items?size=100` | List 100 latest  items |
 
 Item events are published to the `item-events` Kafka topic and consumed by
 `ItemEventConsumer` (with retry via `@RetryableTopic`).
