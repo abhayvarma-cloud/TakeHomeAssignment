@@ -1,0 +1,58 @@
+databases:
+  - name: mydb
+    plan: basic-256mb   # pick a plan; check current free/paid options
+    databaseName: mydb
+    user: appuser
+
+services:
+  - type: web
+    name: app
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: DB_HOST
+        fromDatabase: { name: mydb, property: host }
+      - key: DB_PORT
+        fromDatabase: { name: mydb, property: port }
+      - key: DB_NAME
+        fromDatabase: { name: mydb, property: database }
+      - key: DB_USER
+        fromDatabase: { name: mydb, property: user }
+      - key: DB_PASSWORD
+        fromDatabase: { name: mydb, property: password }
+      - key: SPRING_KAFKA_BOOTSTRAP_SERVERS
+        value: kafka:9092
+
+  - type: pserv
+    name: zookeeper
+    runtime: image
+    image:
+      url: docker.io/confluentinc/cp-zookeeper:7.5.0
+    envVars:
+      - key: ZOOKEEPER_CLIENT_PORT
+        value: "2181"
+      - key: ZOOKEEPER_TICK_TIME
+        value: "2000"
+
+  - type: pserv
+    name: kafka
+    runtime: image
+    image:
+      url: docker.io/confluentinc/cp-kafka:7.5.0
+    envVars:
+      - key: KAFKA_BROKER_ID
+        value: "1"
+      - key: KAFKA_ZOOKEEPER_CONNECT
+        value: zookeeper:2181
+      - key: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+        value: PLAINTEXT:PLAINTEXT
+      - key: KAFKA_LISTENERS
+        value: PLAINTEXT://0.0.0.0:9092
+      - key: KAFKA_ADVERTISED_LISTENERS
+        value: PLAINTEXT://kafka:9092
+      - key: KAFKA_INTER_BROKER_LISTENER_NAME
+        value: PLAINTEXT
+      - key: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+        value: "1"
+      - key: KAFKA_AUTO_CREATE_TOPICS_ENABLE
+        value: "true"
