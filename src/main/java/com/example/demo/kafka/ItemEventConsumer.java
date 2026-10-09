@@ -54,10 +54,11 @@ public class ItemEventConsumer {
     @RetryableTopic(
             attempts = "3",
             backoff = @Backoff(delay = 2000),
-            autoCreateTopics = "true"
+            autoCreateTopics = "true",
+            listenerContainerFactory = "kafkaListenerContainerFactory"
            )
     @KafkaListener(topics = "notification-events", groupId = "demo-group",  containerFactory = "kafkaListenerContainerFactory")
-    public void notify(ConsumerRecord<String, String> record,
+    public void notify(ConsumerRecord<String, String> record,Acknowledgment ack,
                        @Header(name = "event-id", required = false) String eventId,
                        @Header(name = "event-type", required = false) String eventType,
                        @Header(name = RetryTopicHeaders.DEFAULT_HEADER_ATTEMPTS, required = false) Integer attemptHeader) {
@@ -90,7 +91,7 @@ public class ItemEventConsumer {
         tracker.markSent();
         trackerRepo.save(tracker);
 
-
+        ack.acknowledge();     
         log.info("Consumed: key={} partition={} offset={} attempt={} value={}",
                  record.key(), record.partition(), record.offset(), attempt, record.value());
     }
